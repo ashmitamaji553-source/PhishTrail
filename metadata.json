@@ -1,0 +1,6 @@
+{
+  "name": "PhishTrails",
+  "description": "AI email threat detection and forensic tracing tool with raw header parsing, spoofing indicators, and origin IP geolocation tracing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
