@@ -26,6 +26,58 @@ const KNOWN_IP_REGISTRY: Record<string, Partial<OriginGeo>> = {
     lon: 30.3351,
     reverseDns: 'relay-node-77.selectel-cloud.net'
   },
+  // Bulletproof bullet hosting / DGA botnet in Belize
+  '185.244.25.109': {
+    country: 'Belize',
+    countryCode: 'BZ',
+    city: 'Belize City',
+    region: 'Belize District',
+    isp: 'Offshore Bulletproof Host Co.',
+    asn: 'AS59882',
+    org: 'Belize Cyber Relays Corp',
+    lat: 17.5046,
+    lon: -88.1962,
+    reverseDns: 'cdn-delivery-node01.docu-sign-auth.top'
+  },
+  // Compromised university server in São Paulo
+  '177.105.44.82': {
+    country: 'Brazil',
+    countryCode: 'BR',
+    city: 'São Paulo',
+    region: 'São Paulo',
+    isp: 'Universidade Estadual Telecon',
+    asn: 'AS28573',
+    org: 'Compromised Academic SMTP Gateway',
+    lat: -23.5505,
+    lon: -46.6333,
+    reverseDns: 'smtpgw-sec.pucsp-student.br'
+  },
+  // Compromised cloud IoT jump host in Reykjavik, Iceland
+  '185.107.56.23': {
+    country: 'Iceland',
+    countryCode: 'IS',
+    city: 'Reykjavík',
+    region: 'Capital Region',
+    isp: 'Nordic Bulletproof Cloud ehf',
+    asn: 'AS44550',
+    org: 'Reykjavik Datacenter Relays',
+    lat: 64.1466,
+    lon: -21.9426,
+    reverseDns: 'relay-jump-09.dhl-package-tracker.cc'
+  },
+  // Legitimate PayPal Inc. infrastructure
+  '173.0.84.225': {
+    country: 'United States',
+    countryCode: 'US',
+    city: 'San Jose',
+    region: 'California',
+    isp: 'PayPal Inc.',
+    asn: 'AS11643',
+    org: 'PayPal Global Network Operations',
+    lat: 37.3382,
+    lon: -121.8863,
+    reverseDns: 'mx01.phx.paypal.com'
+  },
   '194.147.140.22': {
     country: 'Romania',
     countryCode: 'RO',

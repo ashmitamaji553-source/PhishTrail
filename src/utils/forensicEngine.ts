@@ -367,9 +367,11 @@ function calculatePhishingRisk(
     'urgently',
     'within 24 hours',
     'within 12 hours',
+    'within 48 hours',
     '2 hours',
     'expires today',
     'suspended',
+    'suspension',
     'lockout',
     'freeze',
     'frozen',
@@ -378,7 +380,10 @@ function calculatePhishingRisk(
     'compromised',
     'final notice',
     'strictly confidential',
-    'do not call'
+    'do not call',
+    'mandatory action',
+    'delivery exception',
+    'claim disbursal'
   ];
 
   const credentialKeywords = [
@@ -390,7 +395,12 @@ function calculatePhishingRisk(
     'click the secure verification link',
     'verify your token',
     'account protection',
-    'security operations center'
+    'security operations center',
+    'authenticator re-enrollment',
+    'mfa device migration',
+    'camera app on your mobile',
+    'scan the direct provisioning',
+    'single sign-on'
   ];
 
   const actionRequiredKeywords = [
@@ -403,7 +413,10 @@ function calculatePhishingRisk(
     'gift card',
     'crypto',
     'invoice overdue',
-    'payroll'
+    'payroll',
+    'unpaid customs clearance duty',
+    'download customs clearance',
+    'educational grant refund'
   ];
 
   const foundUrgency = urgencyKeywords.filter(k => content.includes(k));
@@ -418,6 +431,10 @@ function calculatePhishingRisk(
     const lower = url.toLowerCase();
     if (lower.includes('.xyz') || lower.includes('.top') || lower.includes('.cc') || lower.includes('.click')) {
       reason = 'High-risk generic top-level domain (gTLD)';
+    } else if (lower.endsWith('.zip') || lower.endsWith('.iso') || lower.endsWith('.vbs') || lower.endsWith('.exe')) {
+      reason = 'Potential malware delivery archive / executable payload';
+    } else if (lower.includes('qr') || lower.includes('mfa') || lower.includes('enroll') || lower.includes('sync')) {
+      reason = 'MFA token / QR enrollment harvesting URL pattern';
     } else if (lower.includes('verify') || lower.includes('login') || lower.includes('auth') || lower.includes('security')) {
       reason = 'Phishing token / credential harvesting URL pattern';
     } else if (/\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/.test(url)) {

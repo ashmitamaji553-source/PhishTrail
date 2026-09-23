@@ -1,213 +1,254 @@
 import React from 'react';
 import { ForensicAnalysis, ThreatLevel } from '../types';
-import { ShieldAlert, ShieldCheck, ShieldX, Globe, Server, AlertTriangle, CheckCircle2, XCircle, Info, Lock } from 'lucide-react';
+import { Globe, Lock, CheckCircle2, XCircle, AlertTriangle, HelpCircle } from 'lucide-react';
 
 interface DashboardStatsProps {
   analysis: ForensicAnalysis;
 }
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ analysis }) => {
-  const { fraudConfidence, riskScore, authentication, originGeo, spoofingIndicators } = analysis;
+  const { fraudConfidence, riskScore, authentication, originGeo } = analysis;
 
-  // Determine threat level color themes
-  const getThreatColor = (level: ThreatLevel) => {
+  const getThreatStyle = (level: ThreatLevel) => {
     switch (level) {
       case 'CRITICAL_THREAT':
         return {
-          text: 'text-red-400',
-          bg: 'bg-red-950/30',
-          border: 'border-red-500/40',
-          badge: 'bg-red-500/20 text-red-300 border-red-500/50',
-          glow: 'shadow-[0_0_20px_rgba(239,68,68,0.25)]',
-          stroke: '#ef4444'
+          title: 'Critical Threat Detected',
+          text: 'text-rose-400',
+          bg: 'bg-rose-500/10',
+          border: 'border-rose-500/30',
+          gaugeColor: '#f43f5e',
+          badge: 'bg-rose-500/20 text-rose-200 border-rose-500/40',
+          summary: 'High probability of targeted phishing or business email compromise (BEC).'
         };
       case 'HIGH_RISK':
         return {
-          text: 'text-orange-400',
-          bg: 'bg-orange-950/30',
-          border: 'border-orange-500/40',
-          badge: 'bg-orange-500/20 text-orange-300 border-orange-500/50',
-          glow: 'shadow-[0_0_20px_rgba(249,115,22,0.25)]',
-          stroke: '#f97316'
+          title: 'High Risk Phishing',
+          text: 'text-rose-400',
+          bg: 'bg-rose-500/10',
+          border: 'border-rose-500/30',
+          gaugeColor: '#f43f5e',
+          badge: 'bg-rose-500/20 text-rose-200 border-rose-500/40',
+          summary: 'Critical spoofing or credential-harvesting indicators detected.'
         };
       case 'SUSPICIOUS':
         return {
+          title: 'Suspicious Email',
           text: 'text-amber-400',
-          bg: 'bg-amber-950/30',
-          border: 'border-amber-500/40',
-          badge: 'bg-amber-500/20 text-amber-300 border-amber-500/50',
-          glow: 'shadow-[0_0_20px_rgba(245,158,11,0.25)]',
-          stroke: '#f59e0b'
+          bg: 'bg-amber-500/10',
+          border: 'border-amber-500/30',
+          gaugeColor: '#f59e0b',
+          badge: 'bg-amber-500/20 text-amber-200 border-amber-500/40',
+          summary: 'Unusual relay anomalies or heuristic warning triggers found.'
         };
       case 'LOW_RISK':
         return {
+          title: 'Low Risk',
           text: 'text-blue-400',
-          bg: 'bg-blue-950/30',
-          border: 'border-blue-500/40',
-          badge: 'bg-blue-500/20 text-blue-300 border-blue-500/50',
-          glow: 'shadow-[0_0_20px_rgba(59,130,246,0.25)]',
-          stroke: '#3b82f6'
+          bg: 'bg-blue-500/10',
+          border: 'border-blue-500/30',
+          gaugeColor: '#3b82f6',
+          badge: 'bg-blue-500/20 text-blue-200 border-blue-500/40',
+          summary: 'Minor routing irregularities, but no severe threat flags.'
         };
       case 'CLEAN':
       default:
         return {
+          title: 'Legitimate / Clean',
           text: 'text-emerald-400',
-          bg: 'bg-emerald-950/30',
-          border: 'border-emerald-500/40',
-          badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50',
-          glow: 'shadow-[0_0_20px_rgba(16,185,129,0.25)]',
-          stroke: '#10b981'
+          bg: 'bg-emerald-500/10',
+          border: 'border-emerald-500/30',
+          gaugeColor: '#10b981',
+          badge: 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40',
+          summary: 'All email authentication records passed; sender verified.'
         };
     }
   };
 
-  const threat = getThreatColor(riskScore.level);
+  const threat = getThreatStyle(riskScore.level);
 
   // SVG Gauge calculations
-  const radius = 42;
+  const radius = 38;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (fraudConfidence / 100) * circumference;
 
-  // Auth badge renderer
-  const renderAuthBadge = (label: string, status: string, detail: string, sub?: string) => {
-    const isPass = status.toLowerCase() === 'pass';
-    const isFail = status.toLowerCase() === 'fail';
-    const isSoftFail = status.toLowerCase() === 'softfail';
+  const renderAuthCard = (
+    label: string,
+    fullName: string,
+    status: string,
+    detail: string,
+    description: string
+  ) => {
+    const s = status.toLowerCase();
+    const isPass = s === 'pass';
+    const isFail = s === 'fail';
+    const isSoftFail = s === 'softfail';
 
-    const colorClass = isPass
-      ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
+    const color = isPass
+      ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-300'
       : isFail
-      ? 'bg-red-950/60 border-red-500/40 text-red-300'
+      ? 'border-rose-500/30 bg-rose-500/5 text-rose-300'
       : isSoftFail
-      ? 'bg-amber-950/60 border-amber-500/40 text-amber-300'
-      : 'bg-slate-900/80 border-slate-700 text-slate-400';
+      ? 'border-amber-500/30 bg-amber-500/5 text-amber-300'
+      : 'border-slate-700 bg-slate-900/60 text-slate-300';
+
+    const statusBadge = isPass
+      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+      : isFail
+      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+      : isSoftFail
+      ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+      : 'bg-slate-800 text-slate-400 border-slate-700';
 
     return (
-      <div class={`p-3 rounded-lg border flex flex-col justify-between ${colorClass} transition-all`}>
-        <div class="flex items-center justify-between">
-          <span class="font-mono text-xs font-bold text-slate-200 tracking-wider">{label}</span>
-          {isPass ? (
-            <CheckCircle2 class="w-4 h-4 text-emerald-400" />
-          ) : isFail ? (
-            <XCircle class="w-4 h-4 text-red-400" />
-          ) : isSoftFail ? (
-            <AlertTriangle class="w-4 h-4 text-amber-400" />
-          ) : (
-            <Info class="w-4 h-4 text-slate-400" />
-          )}
+      <div className={`p-3.5 rounded-lg border ${color} flex flex-col justify-between`}>
+        <div>
+          <div className="flex items-center justify-between gap-1">
+            <span className="font-semibold text-xs sm:text-sm text-white">
+              {label}
+            </span>
+            <span className={`px-2 py-0.5 rounded text-[11px] font-semibold border uppercase tracking-wider ${statusBadge}`}>
+              {status}
+            </span>
+          </div>
+          <span className="text-[11px] text-slate-400 block mt-0.5">{fullName}</span>
+          <p className="text-xs text-slate-300 mt-2 line-clamp-2" title={detail}>
+            {detail}
+          </p>
         </div>
-        <div class="mt-2 flex items-baseline gap-1.5">
-          <span class="text-sm font-black uppercase font-mono">{status}</span>
-          {sub && <span class="text-[10px] font-mono text-slate-400 truncate">({sub})</span>}
+        <div className="mt-2.5 pt-2 border-t border-slate-800/80 text-[11px] text-slate-400">
+          {description}
         </div>
-        <p class="mt-1 text-[11px] text-slate-400 line-clamp-2" title={detail}>
-          {detail}
-        </p>
       </div>
     );
   };
 
   return (
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {/* 1. Fraud Confidence Dial Card */}
-      <div class={`p-4 rounded-xl border ${threat.border} ${threat.bg} ${threat.glow} backdrop-blur-md flex items-center gap-4`}>
-        <div class="relative w-24 h-24 flex-shrink-0 flex items-center justify-center">
-          <svg class="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 1. Threat Verdict & Confidence Score */}
+      <div className={`p-5 rounded-xl border ${threat.border} ${threat.bg} flex items-center gap-4`}>
+        <div className="relative w-20 h-20 flex-shrink-0 flex items-center justify-center">
+          <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
             <circle
               cx="50"
               cy="50"
               r={radius}
               stroke="#1e293b"
-              strokeWidth="8"
+              strokeWidth="9"
               fill="transparent"
             />
             <circle
               cx="50"
               cy="50"
               r={radius}
-              stroke={threat.stroke}
-              strokeWidth="8"
+              stroke={threat.gaugeColor}
+              strokeWidth="9"
               fill="transparent"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
               strokeLinecap="round"
-              class="transition-all duration-1000 ease-out"
+              className="transition-all duration-700 ease-out"
             />
           </svg>
-          <div class="absolute flex flex-col items-center justify-center">
-            <span class={`text-2xl font-black font-mono leading-none ${threat.text}`}>
+          <div className="absolute flex flex-col items-center justify-center">
+            <span className={`text-xl font-bold tabular-nums leading-none ${threat.text}`}>
               {fraudConfidence}%
             </span>
-            <span class="text-[9px] uppercase tracking-wider text-slate-400 mt-0.5">Confidence</span>
+            <span className="text-[10px] text-slate-400 uppercase mt-0.5">Score</span>
           </div>
         </div>
 
-        <div class="flex flex-col">
-          <span class="text-xs uppercase font-mono text-slate-400">Threat Verdict</span>
-          <span class={`text-base font-bold tracking-tight mt-0.5 ${threat.text}`}>
-            {riskScore.level.replace('_', ' ')}
+        <div className="flex flex-col min-w-0">
+          <span className="text-xs uppercase font-medium tracking-wider text-slate-400">
+            Threat Level
           </span>
-          <span class="text-xs text-slate-300 mt-1">
-            {fraudConfidence >= 70
-              ? 'Critical malicious traits detected.'
-              : fraudConfidence >= 40
-              ? 'Heuristic warning flags triggered.'
-              : 'Cryptographically consistent mail.'}
-          </span>
+          <h3 className={`text-base font-bold truncate mt-0.5 ${threat.text}`}>
+            {threat.title}
+          </h3>
+          <p className="text-xs text-slate-300 mt-1 leading-snug">
+            {threat.summary}
+          </p>
         </div>
       </div>
 
-      {/* 2. Origin Geolocation & Network Card */}
-      <div class="p-4 rounded-xl border border-cyan-900/40 bg-slate-950/60 backdrop-blur-md flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <Globe class="w-4 h-4 text-cyan-400" />
-            <span class="text-xs font-mono uppercase text-slate-400">Origin IP Geolocation</span>
+      {/* 2. Origin Geolocation & Network */}
+      <div className="p-5 rounded-xl border border-slate-800 bg-[#131C31] flex flex-col justify-between">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Globe className="w-4 h-4 text-blue-400" aria-hidden="true" />
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
+              Sender Location
+            </span>
           </div>
-          <span class="px-1.5 py-0.5 text-[10px] font-mono rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300">
-            {originGeo.countryCode || 'NET'}
-          </span>
+          {originGeo.countryCode && (
+            <span className="px-2 py-0.5 text-xs font-semibold rounded bg-slate-800 border border-slate-700 text-slate-200">
+              {originGeo.countryCode}
+            </span>
+          )}
         </div>
 
-        <div class="mt-2">
-          <div class="text-base font-bold font-mono text-slate-100 tracking-wide">
+        <div className="my-2">
+          <div className="text-sm font-semibold font-mono text-white tracking-wide">
             {originGeo.ip}
           </div>
-          <div class="text-xs text-cyan-300 font-medium mt-0.5">
-            {originGeo.city}, {originGeo.country}
+          <div className="text-xs font-medium text-slate-200 mt-0.5">
+            {originGeo.city ? `${originGeo.city}, ` : ''}{originGeo.country || 'Unknown location'}
           </div>
-          <div class="text-[11px] text-slate-400 truncate mt-1" title={originGeo.isp}>
-            <span class="text-slate-500">ISP:</span> {originGeo.isp}
+          <div className="text-xs text-slate-400 truncate mt-1" title={originGeo.isp}>
+            <span className="text-slate-500">ISP:</span> {originGeo.isp || 'N/A'}
           </div>
         </div>
 
-        <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span>ASN: {originGeo.asn || 'AS-UNSPEC'}</span>
-          <span class="text-slate-500 truncate max-w-[120px]" title={originGeo.reverseDns}>
-            {originGeo.reverseDns || 'no-rdns'}
+        <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+          <span>ASN: {originGeo.asn || 'N/A'}</span>
+          <span className="truncate max-w-[120px] font-mono text-[11px]" title={originGeo.reverseDns}>
+            {originGeo.reverseDns || 'No rDNS'}
           </span>
         </div>
       </div>
 
-      {/* 3. Authentication Trio (SPF, DKIM, DMARC) Card */}
-      <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 backdrop-blur-md flex flex-col justify-between lg:col-span-2">
-        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-          <div class="flex items-center gap-2">
-            <Lock class="w-4 h-4 text-cyan-400" />
-            <span class="text-xs font-mono uppercase text-slate-400">Protocol Verification (SPF / DKIM / DMARC)</span>
+      {/* 3. Authentication Trio (SPF, DKIM, DMARC) */}
+      <div className="p-5 rounded-xl border border-slate-800 bg-[#131C31] flex flex-col justify-between lg:col-span-2">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 text-blue-400" aria-hidden="true" />
+            <span className="text-xs font-medium uppercase tracking-wider text-slate-400">
+              Email Authentication Protocols
+            </span>
           </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="text-slate-400">Domain:</span>
-            <span class="font-mono text-cyan-300 font-semibold">{analysis.from.domain}</span>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-slate-400">Claimed Domain:</span>
+            <span className="font-mono text-white font-medium bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+              {analysis.from.domain}
+            </span>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mt-3">
-          {renderAuthBadge('SPF', authentication.spf.status, authentication.spf.detail)}
-          {renderAuthBadge('DKIM', authentication.dkim.status, authentication.dkim.detail, authentication.dkim.selector ? `s=${authentication.dkim.selector}` : undefined)}
-          {renderAuthBadge('DMARC', authentication.dmarc.status, authentication.dmarc.detail)}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+          {renderAuthCard(
+            'SPF',
+            'Sender Policy Framework',
+            authentication.spf.status,
+            authentication.spf.detail,
+            'Verifies sending server IP'
+          )}
+          {renderAuthCard(
+            'DKIM',
+            'DomainKeys Identified Mail',
+            authentication.dkim.status,
+            authentication.dkim.detail,
+            'Validates digital signature'
+          )}
+          {renderAuthCard(
+            'DMARC',
+            'Message Authentication',
+            authentication.dmarc.status,
+            authentication.dmarc.detail,
+            'Enforces domain policy'
+          )}
         </div>
       </div>
     </div>
   );
 };
+

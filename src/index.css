@@ -1,28 +1,49 @@
 @import "tailwindcss";
 
-/* Leaflet Map Custom Cybersecurity Styles */
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #f1f5f9;
+    background-color: #0b0f19;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-feature-settings: "tnum" 1;
+  }
+}
+
+/* Accessible focus ring style */
+:focus-visible {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: 2px !important;
+}
+
+/* Leaflet Map High-Contrast Clean Styles */
 .leaflet-container {
-  background-color: #060c18 !important;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  background-color: #0d1527 !important;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
 .custom-leaflet-popup .leaflet-popup-content-wrapper {
-  background: #020617 !important;
+  background: #111827 !important;
   color: #f8fafc !important;
-  border: 1px solid #0891b2 !important;
+  border: 1px solid #334155 !important;
   border-radius: 8px !important;
-  box-shadow: 0 10px 25px -5px rgba(6, 182, 212, 0.3) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
   padding: 0 !important;
 }
 
 .custom-leaflet-popup .leaflet-popup-tip {
-  background: #020617 !important;
-  border: 1px solid #0891b2 !important;
+  background: #111827 !important;
+  border: 1px solid #334155 !important;
 }
 
 .custom-leaflet-popup .leaflet-popup-content {
   margin: 0 !important;
-  line-height: 1.4 !important;
+  line-height: 1.5 !important;
 }
 
 .custom-trace-pin {
@@ -30,18 +51,19 @@
   border: none !important;
 }
 
-/* Custom Cyber Scrollbars */
+/* Clean, non-distracting scrollbars */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #060c18;
+  background: #0f172a;
 }
 ::-webkit-scrollbar-thumb {
-  background: #164e63;
-  border-radius: 3px;
+  background: #334155;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #0891b2;
+  background: #475569;
 }
+

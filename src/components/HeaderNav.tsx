@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Radar, FolderArchive, Download, BookmarkPlus, Check, Sparkles, Terminal } from 'lucide-react';
+import { Shield, Radar, FolderArchive, Download, BookmarkPlus, Check } from 'lucide-react';
 import { ForensicAnalysis } from '../types';
 
 interface HeaderNavProps {
@@ -81,98 +81,99 @@ Action Requests: ${a.riskScore.actionRequiredKeywords.join(', ') || 'None'}
   };
 
   return (
-    <header class="w-full border-b border-cyan-900/30 bg-[#040813]/90 backdrop-blur-md sticky top-0 z-50">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-        {/* Brand & Identity */}
-        <div class="flex items-center gap-3">
-          <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-950 to-slate-950 border border-cyan-500/40 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-            <Shield class="w-5 h-5 text-cyan-400" />
-            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-            <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-cyan-400"></span>
+    <header className="w-full border-b border-slate-800 bg-[#0F172A] sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        {/* Zone 1: Single Brand Wordmark */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-blue-600/10 border border-blue-500/30 text-blue-400">
+            <Shield className="w-5 h-5" aria-hidden="true" />
           </div>
-
           <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-base font-black tracking-wider text-slate-100 font-mono">
-                PHISH<span class="text-cyan-400">TRAILS</span>
-              </h1>
-              <span class="px-1.5 py-0.2 rounded text-[10px] font-mono font-bold bg-cyan-950/80 border border-cyan-500/30 text-cyan-300">
-                v1.2-DFIR
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-400">AI Email Threat Detection & Forensic Tracing</p>
+            <span className="text-base font-bold tracking-tight text-white">
+              PhishTrails
+            </span>
+            <span className="hidden sm:inline-block ml-2 text-xs text-slate-400 font-normal">
+              Email Threat & Forensic Analyzer
+            </span>
           </div>
         </div>
 
-        {/* Center View Mode Switcher */}
-        <div class="flex items-center gap-1.5 p-1 rounded-xl bg-slate-950 border border-slate-800">
+        {/* Zone 2: View Switcher Tabs */}
+        <nav className="flex items-center p-1 rounded-lg bg-slate-900 border border-slate-800" aria-label="Main Navigation">
           <button
             id="view-analyzer-tab"
+            type="button"
             onClick={() => onViewChange('analyzer')}
-            class={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-medium flex items-center gap-2 transition-colors ${
               currentView === 'analyzer'
-                ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
             }`}
           >
-            <Radar class="w-3.5 h-3.5 text-cyan-400" />
-            <span>Forensic Analyzer</span>
+            <Radar className="w-4 h-4" aria-hidden="true" />
+            <span>Analyzer</span>
           </button>
 
           <button
             id="view-cases-tab"
+            type="button"
             onClick={() => onViewChange('cases')}
-            class={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-md text-xs sm:text-sm font-medium flex items-center gap-2 transition-colors ${
               currentView === 'cases'
-                ? 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/40 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/60'
             }`}
           >
-            <FolderArchive class="w-3.5 h-3.5 text-cyan-400" />
-            <span>Case Archive</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-slate-800 text-cyan-300">
+            <FolderArchive className="w-4 h-4" aria-hidden="true" />
+            <span>Saved Cases</span>
+            <span className="px-1.5 py-0.5 rounded text-[11px] font-semibold tabular-nums bg-slate-800 text-slate-300">
               {caseCount}
             </span>
           </button>
-        </div>
+        </nav>
 
-        {/* Right Actions */}
-        <div class="flex items-center gap-2">
+        {/* Zone 3: Actions */}
+        <div className="flex items-center gap-2">
           {currentAnalysis && currentView === 'analyzer' && (
             <>
               <button
                 id="save-case-btn"
+                type="button"
                 onClick={onSaveCase}
-                class={`px-3 py-1.5 rounded-lg text-xs font-mono flex items-center gap-1.5 border transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-1.5 border transition-colors ${
                   isCaseSaved
-                    ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
-                    : 'bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-300 hover:text-cyan-300'
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
+                    : 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white'
                 }`}
                 title="Save Analysis to Case List"
               >
-                {isCaseSaved ? <Check class="w-3.5 h-3.5" /> : <BookmarkPlus class="w-3.5 h-3.5" />}
-                <span>{isCaseSaved ? 'Saved in Cases' : 'Save Case'}</span>
+                {isCaseSaved ? (
+                  <Check className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+                ) : (
+                  <BookmarkPlus className="w-4 h-4 text-slate-400" aria-hidden="true" />
+                )}
+                <span>{isCaseSaved ? 'Saved' : 'Save Case'}</span>
               </button>
 
               <button
                 id="export-report-btn"
+                type="button"
                 onClick={handleExportCurrent}
-                class="px-3 py-1.5 rounded-lg text-xs font-mono bg-cyan-950/60 hover:bg-cyan-900/60 border border-cyan-500/40 text-cyan-300 flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-white flex items-center gap-1.5 transition-colors"
                 title="Export Forensic Analysis Report"
               >
-                {downloaded ? <Check class="w-3.5 h-3.5 text-emerald-400" /> : <Download class="w-3.5 h-3.5" />}
-                <span>{downloaded ? 'Exported' : 'Export DFIR'}</span>
+                {downloaded ? (
+                  <Check className="w-4 h-4 text-emerald-400" aria-hidden="true" />
+                ) : (
+                  <Download className="w-4 h-4 text-slate-400" aria-hidden="true" />
+                )}
+                <span>{downloaded ? 'Exported' : 'Export Report'}</span>
               </button>
             </>
           )}
-
-          {/* Engine Status Pill */}
-          <div class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-400">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Sensor Online</span>
-          </div>
         </div>
       </div>
     </header>
   );
 };
+

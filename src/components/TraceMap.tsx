@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { ForensicAnalysis, RelayHop } from '../types';
-import { ShieldAlert, Globe, Radio, Server, MapPin, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { Globe, ZoomIn, ZoomOut, RotateCcw, MapPin } from 'lucide-react';
 
 interface TraceMapProps {
   analysis: ForensicAnalysis;
@@ -16,7 +16,6 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Initialize map if not yet created
     if (!mapInstanceRef.current) {
       const map = L.map(mapContainerRef.current, {
         center: [20, 0],
@@ -27,7 +26,7 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
         attributionControl: false
       });
 
-      // CartoDB Dark Matter tile layer for dark cybersecurity aesthetic
+      // CartoDB Dark Matter tile layer
       L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         subdomains: 'abcd',
         maxZoom: 19
@@ -35,7 +34,7 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
 
       // Attribution
       L.control.attribution({ position: 'bottomright', prefix: false })
-        .addAttribution('&copy; <a href="https://carto.com/" target="_blank" class="text-cyan-600 hover:underline">CARTO</a> | &copy; OSM')
+        .addAttribution('&copy; <a href="https://carto.com/" target="_blank" class="text-blue-400 hover:underline">CARTO</a> | &copy; OSM')
         .addTo(map);
 
       mapInstanceRef.current = map;
@@ -46,7 +45,6 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
     const layerGroup = layerGroupRef.current;
     if (!map || !layerGroup) return;
 
-    // Clear previous markers & lines
     layerGroup.clearLayers();
 
     // Collect valid hops with geo coordinates
@@ -78,9 +76,8 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
     }
 
     // Add remaining relay hops
-    analysis.hops.forEach((hop, i) => {
+    analysis.hops.forEach((hop) => {
       if (hop.geo && hop.geo.lat && hop.geo.lon) {
-        // Skip duplicate coordinate if it's identical to the origin
         const isDuplicate = geoHops.some(
           g => Math.abs(g.lat - hop.geo!.lat) < 0.001 && Math.abs(g.lon - hop.geo!.lon) < 0.001
         );
@@ -95,7 +92,6 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
       }
     });
 
-    // If no hops had geo, fallback to origin
     if (geoHops.length === 0 && analysis.originGeo) {
       geoHops.push({
         hop: analysis.hops[0] || { hopNumber: 1, isOrigin: true },
@@ -113,17 +109,17 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
       
       // Outer glow line
       L.polyline(latlngs, {
-        color: '#06b6d4',
+        color: '#3b82f6',
         weight: 4,
-        opacity: 0.4,
-        dashArray: '4, 8'
+        opacity: 0.35,
+        dashArray: '6, 8'
       }).addTo(layerGroup);
 
       // Core path line
       L.polyline(latlngs, {
-        color: '#22d3ee',
+        color: '#60a5fa',
         weight: 2,
-        opacity: 0.9
+        opacity: 0.95
       }).addTo(layerGroup);
     }
 
@@ -134,33 +130,26 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
       const isOrigin = item.isOrigin || index === 0;
       const isDestination = index === geoHops.length - 1 && geoHops.length > 1;
 
-      const markerColor = isOrigin
-        ? '#ef4444' // Red for origin threat source
-        : isDestination
-        ? '#10b981' // Green for destination inbox
-        : '#06b6d4'; // Cyan for intermediate relays
-
       const html = isOrigin
         ? `
           <div class="relative flex items-center justify-center w-8 h-8">
-            <div class="absolute w-8 h-8 rounded-full bg-red-500/30 animate-ping"></div>
-            <div class="w-6 h-6 rounded-full bg-red-950 border-2 border-red-500 flex items-center justify-center text-red-300 shadow-[0_0_12px_rgba(239,68,68,0.8)]">
-              <span class="text-[10px] font-bold">#1</span>
+            <div class="w-7 h-7 rounded-full bg-rose-600 border-2 border-white flex items-center justify-center text-white shadow-md font-bold text-[11px]">
+              #1
             </div>
           </div>
         `
         : isDestination
         ? `
           <div class="relative flex items-center justify-center w-7 h-7">
-            <div class="w-6 h-6 rounded-full bg-emerald-950 border-2 border-emerald-400 flex items-center justify-center text-emerald-300 shadow-[0_0_10px_rgba(16,185,129,0.7)]">
-              <span class="text-[9px] font-bold">MX</span>
+            <div class="w-6 h-6 rounded-full bg-emerald-600 border-2 border-white flex items-center justify-center text-white shadow-md font-bold text-[10px]">
+              MX
             </div>
           </div>
         `
         : `
           <div class="relative flex items-center justify-center w-6 h-6">
-            <div class="w-5 h-5 rounded-full bg-slate-900 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.6)]">
-              <span class="text-[8px] font-mono font-bold">${item.hop.hopNumber || index + 1}</span>
+            <div class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-white shadow-md font-bold text-[9px]">
+              ${item.hop.hopNumber || index + 1}
             </div>
           </div>
         `;
@@ -175,24 +164,24 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
 
       const marker = L.marker([item.lat, item.lon], { icon }).addTo(layerGroup);
 
-      // Popup content
+      // Clean readable popup content
       const geo = item.hop.geo || analysis.originGeo;
       const popupContent = `
-        <div class="p-2 font-sans text-xs bg-slate-950 text-slate-100 border border-slate-700 rounded shadow-xl min-w-[220px]">
-          <div class="flex items-center justify-between pb-1 mb-1.5 border-b border-slate-800">
-            <span class="font-mono font-semibold ${isOrigin ? 'text-red-400' : 'text-cyan-400'}">
-              ${isOrigin ? 'ORIGIN IP (HOP #1)' : isDestination ? 'DESTINATION MX' : `RELAY HOP #${item.hop.hopNumber}`}
+        <div class="p-3 font-sans text-xs bg-slate-900 text-slate-100 border border-slate-700 rounded-lg shadow-xl min-w-[240px]">
+          <div class="flex items-center justify-between pb-1.5 mb-2 border-b border-slate-800">
+            <span class="font-semibold ${isOrigin ? 'text-rose-400' : isDestination ? 'text-emerald-400' : 'text-blue-400'}">
+              ${isOrigin ? 'ORIGIN (HOP #1)' : isDestination ? 'DESTINATION MX' : `RELAY HOP #${item.hop.hopNumber}`}
             </span>
-            <span class="px-1 py-0.5 text-[9px] font-mono rounded ${isOrigin ? 'bg-red-950/80 text-red-300' : 'bg-cyan-950/80 text-cyan-300'}">
+            <span class="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-slate-800 text-slate-200">
               ${geo.countryCode || 'IP'}
             </span>
           </div>
           <div class="space-y-1">
-            <div class="font-mono text-cyan-300 font-semibold text-[13px]">${item.hop.fromIp || analysis.originIp}</div>
-            <div class="text-slate-300 text-[11px]">${geo.city || 'Unknown'}, ${geo.country || 'Unknown'}</div>
-            <div class="text-slate-400 text-[10px] truncate"><span class="text-slate-500">ISP:</span> ${geo.isp || 'N/A'}</div>
-            ${geo.asn ? `<div class="text-slate-400 text-[10px]"><span class="text-slate-500">ASN:</span> ${geo.asn}</div>` : ''}
-            ${item.hop.delaySeconds ? `<div class="text-amber-400 text-[10px]"><span class="text-slate-500">Transit Delay:</span> +${item.hop.delaySeconds}s</div>` : ''}
+            <div class="font-mono text-white font-semibold text-[13px]">${item.hop.fromIp || analysis.originIp}</div>
+            <div class="text-slate-200 text-xs">${geo.city || 'Unknown'}, ${geo.country || 'Unknown'}</div>
+            <div class="text-slate-400 text-[11px] truncate"><span class="text-slate-500">ISP:</span> ${geo.isp || 'N/A'}</div>
+            ${geo.asn ? `<div class="text-slate-400 text-[11px]"><span class="text-slate-500">ASN:</span> ${geo.asn}</div>` : ''}
+            ${item.hop.delaySeconds ? `<div class="text-amber-300 text-[11px] font-medium"><span class="text-slate-500">Transit Delay:</span> +${item.hop.delaySeconds}s</div>` : ''}
           </div>
         </div>
       `;
@@ -216,7 +205,6 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
     }
 
     return () => {
-      // Cleanup layers on unmount or re-render
       layerGroup.clearLayers();
     };
   }, [analysis]);
@@ -231,70 +219,77 @@ export const TraceMap: React.FC<TraceMapProps> = ({ analysis }) => {
   const origin = analysis.originGeo;
 
   return (
-    <div id="forensic-trace-map-container" class="relative w-full h-[400px] lg:h-[460px] rounded-xl overflow-hidden border border-cyan-900/40 bg-[#060c18] shadow-2xl flex flex-col">
+    <div id="forensic-trace-map-container" className="relative w-full h-[400px] lg:h-[450px] rounded-xl overflow-hidden border border-slate-800 bg-[#0D1527] shadow-sm flex flex-col">
       {/* Top Map HUD Bar */}
-      <div class="absolute top-3 left-3 right-3 z-[400] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        <div class="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-950/85 backdrop-blur-md border border-cyan-500/30 text-xs text-slate-200 shadow-lg">
-          <Radio class="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-          <span class="font-mono text-cyan-400 font-semibold tracking-wide">ORIGIN TRACE:</span>
-          <span class="font-mono text-slate-100">{origin.ip}</span>
-          <span class="text-slate-500">|</span>
-          <span class="text-slate-300">{origin.city}, {origin.country}</span>
+      <div className="absolute top-3 left-3 right-3 z-[400] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+        <div className="pointer-events-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-700 text-xs text-slate-200 shadow-md">
+          <Globe className="w-4 h-4 text-blue-400" aria-hidden="true" />
+          <span className="font-semibold text-white">Origin:</span>
+          <span className="font-mono text-slate-200">{origin.ip}</span>
+          <span className="text-slate-500">·</span>
+          <span className="text-slate-300">{origin.city}, {origin.country}</span>
         </div>
 
         {/* Map Controls */}
-        <div class="pointer-events-auto flex items-center gap-1 p-1 rounded-lg bg-slate-950/85 backdrop-blur-md border border-slate-800 shadow-lg">
+        <div className="pointer-events-auto flex items-center gap-1 p-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-700 shadow-md">
           <button
             id="map-zoom-in-btn"
+            type="button"
             onClick={handleZoomIn}
-            class="p-1.5 text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 rounded transition-colors"
+            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
             title="Zoom In"
+            aria-label="Zoom In"
           >
-            <ZoomIn class="w-3.5 h-3.5" />
+            <ZoomIn className="w-4 h-4" />
           </button>
           <button
             id="map-zoom-out-btn"
+            type="button"
             onClick={handleZoomOut}
-            class="p-1.5 text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 rounded transition-colors"
+            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
             title="Zoom Out"
+            aria-label="Zoom Out"
           >
-            <ZoomOut class="w-3.5 h-3.5" />
+            <ZoomOut className="w-4 h-4" />
           </button>
           <button
             id="map-reset-btn"
+            type="button"
             onClick={handleReset}
-            class="p-1.5 text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80 rounded transition-colors"
+            className="p-1.5 text-slate-300 hover:text-white hover:bg-slate-800 rounded transition-colors"
             title="Reset Global View"
+            aria-label="Reset Global View"
           >
-            <RotateCcw class="w-3.5 h-3.5" />
+            <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Leaflet Map Stage */}
-      <div ref={mapContainerRef} class="w-full h-full z-0" />
+      <div ref={mapContainerRef} className="w-full h-full z-0" />
 
       {/* Bottom HUD: Hop sequence and quick legend */}
-      <div class="absolute bottom-3 left-3 right-3 z-[400] pointer-events-none flex flex-wrap items-center justify-between gap-2">
-        <div class="pointer-events-auto flex items-center gap-3 px-3 py-1.5 rounded-lg bg-slate-950/85 backdrop-blur-md border border-slate-800 text-[11px] text-slate-300">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.9)]"></span>
-            <span>Origin IP / Client MTA</span>
+      <div className="absolute bottom-3 left-3 right-3 z-[400] pointer-events-none flex flex-wrap items-center justify-between gap-2">
+        <div className="pointer-events-auto flex items-center gap-3 px-3 py-1.5 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-700 text-xs text-slate-200 shadow-md">
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-rose-600 border border-white"></span>
+            <span>Origin IP (#1)</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_6px_rgba(6,182,212,0.9)]"></span>
-            <span>Relay Hop</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-blue-600 border border-white"></span>
+            <span>Intermediate Relay</span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(16,185,129,0.9)]"></span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-emerald-600 border border-white"></span>
             <span>Recipient MX</span>
           </div>
         </div>
 
-        <div class="pointer-events-auto px-3 py-1.5 rounded-lg bg-slate-950/85 backdrop-blur-md border border-slate-800 text-[11px] font-mono text-cyan-400">
-          Total Hops: <span class="text-white font-bold">{analysis.hops.length}</span>
+        <div className="pointer-events-auto px-3 py-1.5 rounded-lg bg-slate-900/90 backdrop-blur-md border border-slate-700 text-xs text-slate-200 font-medium shadow-md">
+          Total Relay Hops: <span className="text-white font-bold tabular-nums">{analysis.hops.length}</span>
         </div>
       </div>
     </div>
   );
 };
+

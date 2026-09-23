@@ -6,13 +6,7 @@ import {
   Trash2,
   ExternalLink,
   Download,
-  Filter,
-  CheckCircle2,
-  Clock,
-  AlertOctagon,
-  FileText,
-  ShieldAlert,
-  ArrowUpDown
+  Filter
 } from 'lucide-react';
 
 interface CaseListViewProps {
@@ -34,8 +28,6 @@ export const CaseListView: React.FC<CaseListViewProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [selectedCaseForNotes, setSelectedCaseForNotes] = useState<CaseRecord | null>(null);
-  const [notesInput, setNotesInput] = useState('');
 
   const filteredCases = cases.filter((c) => {
     const matchesSearch =
@@ -51,16 +43,16 @@ export const CaseListView: React.FC<CaseListViewProps> = ({
   const getStatusBadge = (status: CaseStatus) => {
     switch (status) {
       case 'confirmed_phish':
-        return 'bg-red-950/80 border-red-500/60 text-red-300';
+        return 'bg-rose-500/15 border-rose-500/30 text-rose-300';
       case 'investigating':
-        return 'bg-amber-950/80 border-amber-500/60 text-amber-300';
+        return 'bg-amber-500/15 border-amber-500/30 text-amber-300';
       case 'false_positive':
-        return 'bg-blue-950/80 border-blue-500/60 text-blue-300';
+        return 'bg-blue-500/15 border-blue-500/30 text-blue-300';
       case 'resolved':
-        return 'bg-emerald-950/80 border-emerald-500/60 text-emerald-300';
+        return 'bg-emerald-500/15 border-emerald-500/30 text-emerald-300';
       case 'open':
       default:
-        return 'bg-slate-900 border-slate-700 text-slate-300';
+        return 'bg-slate-800 border-slate-700 text-slate-300';
     }
   };
 
@@ -132,46 +124,47 @@ END OF PHISHTRAILS DFIR EXPORT
   };
 
   return (
-    <div class="p-5 rounded-2xl border border-cyan-900/40 bg-[#060c18] shadow-2xl backdrop-blur-md">
+    <div className="p-5 sm:p-6 rounded-xl border border-slate-800 bg-[#131C31] shadow-sm">
       {/* Header Bar */}
-      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <FolderArchive class="w-5 h-5 text-cyan-400" />
-          <h2 class="text-base font-bold text-slate-100 font-mono tracking-wide">
-            Investigated Cases & Saved Telemetry
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div className="flex items-center gap-2">
+          <FolderArchive className="w-5 h-5 text-blue-400" aria-hidden="true" />
+          <h2 className="text-base font-semibold text-white">
+            Saved Forensic Cases
           </h2>
-          <span class="px-2 py-0.5 rounded-full text-xs font-mono bg-cyan-950 border border-cyan-500/40 text-cyan-300">
+          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-800 border border-slate-700 text-slate-200 tabular-nums">
             {cases.length} Total
           </span>
         </div>
 
         <button
+          type="button"
           onClick={onClose}
-          class="px-3 py-1.5 rounded-lg text-xs font-mono bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 transition-colors"
+          className="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
         >
-          Return to Analyzer
+          Return to Analysis
         </button>
       </div>
 
       {/* Filter and Search Controls */}
-      <div class="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div class="relative flex-1 min-w-[240px]">
-          <Search class="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" aria-hidden="true" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by subject, sender, IP or country..."
-            class="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+            className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
           />
         </div>
 
-        <div class="flex items-center gap-2">
-          <Filter class="w-3.5 h-3.5 text-slate-400" />
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-slate-400" aria-hidden="true" />
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            class="px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-cyan-500/50 font-mono"
+            className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-xs sm:text-sm text-white focus:outline-none focus:border-blue-500 cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="open">Open</option>
@@ -183,49 +176,49 @@ END OF PHISHTRAILS DFIR EXPORT
         </div>
       </div>
 
-      {/* Cases Table / Cards */}
-      <div class="mt-4 overflow-x-auto rounded-xl border border-slate-800/80">
+      {/* Cases Table */}
+      <div className="mt-4 overflow-x-auto rounded-lg border border-slate-800">
         {filteredCases.length === 0 ? (
-          <div class="p-8 text-center text-xs text-slate-500 font-mono">
-            No investigated cases matching query. Run an analysis and save it to this case log.
+          <div className="p-8 text-center text-xs sm:text-sm text-slate-400">
+            No investigated cases match your query. Analyze an email and click "Save Case" to record findings here.
           </div>
         ) : (
-          <table class="w-full text-left text-xs font-mono">
-            <thead class="bg-slate-900/90 text-slate-400 border-b border-slate-800">
+          <table className="w-full text-left text-xs sm:text-sm">
+            <thead className="bg-slate-900 text-slate-300 border-b border-slate-800">
               <tr>
-                <th class="p-3">Subject & Sender</th>
-                <th class="p-3">Threat Confidence</th>
-                <th class="p-3">Origin Network</th>
-                <th class="p-3">Status</th>
-                <th class="p-3">Date</th>
-                <th class="p-3 text-right">Actions</th>
+                <th className="p-3 font-semibold">Subject &amp; Sender</th>
+                <th className="p-3 font-semibold">Threat Score</th>
+                <th className="p-3 font-semibold">Origin Network</th>
+                <th className="p-3 font-semibold">Case Status</th>
+                <th className="p-3 font-semibold">Date</th>
+                <th className="p-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/50">
+            <tbody className="divide-y divide-slate-800/80">
               {filteredCases.map((rec) => {
                 const isActive = activeCaseId === rec.id;
                 return (
                   <tr
                     key={rec.id}
-                    class={`transition-colors ${
-                      isActive ? 'bg-cyan-950/30' : 'hover:bg-slate-900/40'
+                    className={`transition-colors ${
+                      isActive ? 'bg-blue-950/30' : 'hover:bg-slate-900/50'
                     }`}
                   >
-                    <td class="p-3 max-w-[280px]">
-                      <div class="font-semibold text-slate-100 truncate" title={rec.subject}>
+                    <td className="p-3 max-w-[280px]">
+                      <div className="font-semibold text-white truncate" title={rec.subject}>
                         {rec.subject}
                       </div>
-                      <div class="text-[11px] text-slate-400 truncate mt-0.5" title={rec.sender}>
+                      <div className="text-xs text-slate-400 truncate mt-0.5" title={rec.sender}>
                         {rec.sender}
                       </div>
                     </td>
 
-                    <td class="p-3">
-                      <div class="flex items-center gap-2">
+                    <td className="p-3">
+                      <div className="flex items-center gap-2">
                         <span
-                          class={`font-bold font-mono ${
+                          className={`font-bold tabular-nums ${
                             rec.fraudConfidence >= 75
-                              ? 'text-red-400'
+                              ? 'text-rose-400'
                               : rec.fraudConfidence >= 45
                               ? 'text-amber-400'
                               : 'text-emerald-400'
@@ -233,22 +226,22 @@ END OF PHISHTRAILS DFIR EXPORT
                         >
                           {rec.fraudConfidence}%
                         </span>
-                        <span class="text-[10px] text-slate-500">({rec.threatLevel})</span>
+                        <span className="text-[11px] text-slate-400 uppercase font-medium">({rec.threatLevel})</span>
                       </div>
                     </td>
 
-                    <td class="p-3">
-                      <div class="text-cyan-300 font-semibold">{rec.originIp}</div>
-                      <div class="text-[11px] text-slate-400 truncate max-w-[150px]">
-                        {rec.originCountry} • {rec.originIsp}
+                    <td className="p-3">
+                      <div className="text-white font-mono text-xs">{rec.originIp}</div>
+                      <div className="text-xs text-slate-400 truncate max-w-[160px]">
+                        {rec.originCountry} · {rec.originIsp}
                       </div>
                     </td>
 
-                    <td class="p-3">
+                    <td className="p-3">
                       <select
                         value={rec.status}
                         onChange={(e) => onUpdateCaseStatus(rec.id, e.target.value as CaseStatus)}
-                        class={`px-2 py-1 rounded text-[11px] font-mono border ${getStatusBadge(
+                        className={`px-2.5 py-1 rounded text-xs font-semibold border ${getStatusBadge(
                           rec.status
                         )} cursor-pointer focus:outline-none`}
                       >
@@ -260,32 +253,38 @@ END OF PHISHTRAILS DFIR EXPORT
                       </select>
                     </td>
 
-                    <td class="p-3 text-slate-400 text-[11px] whitespace-nowrap">
+                    <td className="p-3 text-slate-400 text-xs whitespace-nowrap">
                       {new Date(rec.createdAt).toLocaleDateString()}
                     </td>
 
-                    <td class="p-3 text-right">
-                      <div class="flex items-center justify-end gap-1.5">
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         <button
+                          type="button"
                           onClick={() => onSelectCase(rec.analysis)}
-                          class="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-cyan-300 transition-colors"
+                          className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
                           title="Open Case in Dashboard"
+                          aria-label="Open Case in Dashboard"
                         >
-                          <ExternalLink class="w-4 h-4" />
+                          <ExternalLink className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => exportReport(rec)}
-                          class="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-cyan-300 transition-colors"
+                          className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
                           title="Export Incident Report"
+                          aria-label="Export Incident Report"
                         >
-                          <Download class="w-4 h-4" />
+                          <Download className="w-4 h-4" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => onDeleteCase(rec.id)}
-                          class="p-1.5 rounded hover:bg-slate-800 text-slate-400 hover:text-red-400 transition-colors"
+                          className="p-1.5 rounded-md hover:bg-slate-800 text-slate-400 hover:text-rose-400 transition-colors"
                           title="Delete Case"
+                          aria-label="Delete Case"
                         >
-                          <Trash2 class="w-4 h-4" />
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -299,3 +298,4 @@ END OF PHISHTRAILS DFIR EXPORT
     </div>
   );
 };
+

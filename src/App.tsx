@@ -177,11 +177,11 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#0B1120] text-slate-100 flex flex-col font-sans selection:bg-blue-600/30 selection:text-white">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-5 right-5 z-[999] px-4 py-2.5 rounded-xl bg-slate-900/95 border border-cyan-500/50 text-cyan-200 text-xs font-mono shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200">
-          <CheckCircle className="w-4 h-4 text-cyan-400" />
+        <div className="fixed bottom-5 right-5 z-[999] px-4 py-2.5 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-xs sm:text-sm font-medium shadow-xl flex items-center gap-2 backdrop-blur-md animate-in fade-in slide-in-from-bottom-3 duration-200">
+          <CheckCircle className="w-4 h-4 text-emerald-400" aria-hidden="true" />
           <span>{toastMessage}</span>
         </div>
       )}
@@ -228,10 +228,10 @@ export default function App() {
                     {/* Visual Origin & Relay Map */}
                     <div>
                       <div className="flex items-center justify-between mb-2 px-1">
-                        <span className="text-xs font-mono uppercase text-slate-400 font-semibold tracking-wider">
-                          Forensic Packet Route & Origin Geolocation
+                        <span className="text-xs uppercase text-slate-400 font-semibold tracking-wider">
+                          Packet Route &amp; Origin Geolocation
                         </span>
-                        <span className="text-[11px] font-mono text-cyan-400">
+                        <span className="text-xs text-slate-300 font-medium">
                           {currentAnalysis.originGeo.city}, {currentAnalysis.originGeo.country}
                         </span>
                       </div>
@@ -267,10 +267,10 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-900 bg-[#040813] py-4 text-center text-xs font-mono text-slate-500">
+      <footer className="w-full border-t border-slate-800 bg-[#0B1120] py-4 text-center text-xs text-slate-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
-          <span>PhishTrails Forensic Threat Analyzer & Origin Tracer</span>
-          <span className="text-cyan-500/80">Leaflet.js • RFC 5322 Parsing • AI Threat Intel</span>
+          <span>PhishTrails Forensic Threat Analyzer &amp; Origin Tracer</span>
+          <span className="text-slate-400">RFC 5322 Parsing · Geolocation · Authentication Auditing</span>
         </div>
       </footer>
     </div>
